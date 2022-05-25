@@ -1,7 +1,32 @@
 #root {
     width: 100%;
-    background-color: #024c3e;
-    min-height: 100vh;
-    height: 100%;
+    background-color: hsl(169, 95%, 15%);
+    /* min-height: 100vh; */
+    height: 100vh;
     overflow-y: hidden !important;
+}
+
+.cardStyle {
+    border-radius: 10px;
+    overflow-y: hidden !important;
+}
+
+.centerTxt {
+    margin: 0 auto;
+  }
+
+.vertical{
+    position: relative;
+    top:50%;
+    transform: translateY(-50%);
+}
+
+.tokenHeader { 
+    height: 50%;
+}
+
+.comingSoon {
+    background-color:rgba(190, 190, 190, 0.38);
+    background-size:auto;
+    background-repeat: no-repeat;
 }
