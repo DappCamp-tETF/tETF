@@ -13,8 +13,8 @@ contract TestUniswap {
     address _tokenOut,
     uint _amountIn,
     uint _amountOutMin,
-    address _to
-  ) external {
+    address _to // contract address
+  ) internal {
     IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
     IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
 
@@ -36,7 +36,7 @@ contract TestUniswap {
     address _tokenIn,
     address _tokenOut,
     uint _amountIn
-  ) external view returns (uint) {
+  ) public view returns (uint) {
     address[] memory path;
     path = new address[](2);
     path[0] = _tokenIn;
@@ -48,4 +48,47 @@ contract TestUniswap {
 
     return amountOutMins[path.length - 1];
   }
+
+
+  function invest(
+        address _tokenIn, // USDC
+        uint256 _investmentAmount,
+        address[] memory tokenArray,
+        uint256[] memory weightArray
+    ) external payable {
+        require(_investmentAmount > 0, "amount has to be positive");
+
+        
+        for (uint256 i = 0; i < tokenArray.length; i++) {
+              uint256 minAmount = getAmountOutMin(_tokenIn, tokenArray[i], _investmentAmount);
+              swap(
+                  _tokenIn, // USDC
+                  tokenArray[i], 
+                  _investmentAmount*weightArray[i],
+                  minAmount,
+                  msg.sender
+              );
+        }
+        
+    }
+
+    function liquidate(
+      uint256 _liquidationAmount,
+      address[] memory tokenArray,
+      uint256[] memory weightArray,
+      address _tokenOut) external {
+
+        for (uint256 i = 0; i < tokenArray.length; i++) {
+              uint256 minAmount = getAmountOutMin(_tokenOut, tokenArray[i], _liquidationAmount);
+              swap(
+                  tokenArray[i],
+                  _tokenOut, // USDC
+                  _liquidationAmount*weightArray[i],
+                  minAmount,
+                  msg.sender
+              );
+        }
+    }
+
+
 }
