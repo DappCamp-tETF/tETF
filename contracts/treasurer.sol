@@ -10,17 +10,13 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-//import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-//import {Math} from "@openzeppelin/contracts/math/Math.sol";
-//import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
+import "./FundManager.sol";
 
 contract treasurer {
 
-    //using Math for uint256;
-    //using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address owner;    // current owner of the contract
+    address owner;    
     IERC20 usdc = IERC20(0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b);
     IERC20 tETF = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599); //using WBTC address as placeholder
     
@@ -32,6 +28,10 @@ contract treasurer {
     event WithdrawtETF(address indexed _to, uint _value);
     event Balances(address indexed _from, uint _usdcValue, uint _tETFValue);
 
+    // constructor() public {
+    //     owner = msg.sender;
+    // }
+
     function withdrawUSDC(uint amount) public {
         require(owner == msg.sender);
         require(amount<=usdcByAddress[msg.sender],"You do not hold enough USDC");
@@ -40,6 +40,7 @@ contract treasurer {
 
         emit WithdrawUSDC(msg.sender, amount);
     }
+
     function withdrawtETF(uint amount) public {
         require(amount<=tETFByAddress[msg.sender],"You do not hold enough tETF.");
         SafeERC20.safeTransferFrom(tETF, address(this), msg.sender, amount);
@@ -52,6 +53,7 @@ contract treasurer {
         SafeERC20.safeTransferFrom(usdc, msg.sender, address(this), amount);
         usdcByAddress[from]+=amount;
         //@dev add send to Fund Manager
+
         emit Deposit(msg.sender, msg.value);
     }
 

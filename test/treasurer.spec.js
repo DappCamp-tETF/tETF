@@ -26,7 +26,7 @@ describe("treasurer", () => {
         it("Should send usdc to the contract when user deposits", async function () {
             await expect(
 				//treasury.deposit(owner,100)
-                treasury.connect(account1).deposit(account1,100)
+                treasury.connect(account1).deposit(account1.address,100)
             ).to.emit(treasury,"Deposit");
         });
 		it("should revert when not called by an owner", async function () {
