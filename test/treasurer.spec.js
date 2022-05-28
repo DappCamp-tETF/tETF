@@ -17,8 +17,12 @@ describe("treasurer", () => {
 		
         const Treasury = await ethers.getContractFactory("treasurer");
         treasury = await Treasury.deploy();
+<<<<<<< HEAD
 		await treasury.deployed();
 
+=======
+		
+>>>>>>> 91e45bf9c5f33add652be486f67198b0642e375f
     });
 
 	describe("deposit", function () {
