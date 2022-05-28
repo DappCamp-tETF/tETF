@@ -21,22 +21,18 @@ describe("treasurer", () => {
     });
 
 	describe("deposit", function () {
-        it("Should send ether to the contract and update the account balance mapping", async function () {
+        it("Should send usdc to the contract when user deposits", async function () {
             await expect(
-                treasury.deposit(account1, 100)
-            ).to.be.revertedWith("SafeERC20: ERC20 operation did not succeed");
+				treasury.deposit(owner,100)
+                //treasury.connect(account1).deposit(account1,100);
+            ).to.emit(treasury,"Deposit");
         });
 		it("should revert when not called by an owner", async function () {
 			await expect(
-				treasury.connect(account1).add()
+				treasury.connect(account1).withdraw(100)
 			).to.be.revertedWith("Not an owner");
 		});
 
-		it("should revert when invalid animal is provided", async function () {
-			await expect(
-				petPark.connect(owner).add(AnimalType.None, 5)
-			).to.be.revertedWith("Invalid animal");
-		});
 
 		it("should emit added event when pet is added", async function () {
 			await expect(petPark.connect(owner).add(AnimalType.Fish, 5))
@@ -45,4 +41,22 @@ describe("treasurer", () => {
 		});
 	});
 
+	describe("withdrawUSDC", function() {
+		it("should return funds to the user when they withdraw a valid value", async function () {
+            await expect(
+				treasury.withdrawUSDC(owner,100)
+            ).to.emit(treasury,"Withdraw");
+        });
+	});
+
+	describe("getBalances", function() {
+		it("should update account balance when funds deposited", async function () {
+            await expect(
+				treasury
+					.getBalances(account1)
+
+                //treasury.connect(account1).deposit(account1,100);
+            ).to.emit(0,0);
+        });
+	});
 });
