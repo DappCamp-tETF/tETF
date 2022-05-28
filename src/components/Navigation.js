@@ -1,7 +1,8 @@
 import React from 'react';
-import { Navbar, Row, Col, Container, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Row, Col, Container, Nav } from 'react-bootstrap';
 import { Profile } from './Profile';
 import { Twitter, Discord, Telegram, Github  } from 'react-bootstrap-icons';
+import { Account } from './Account';
 
 
 export function Navigation() {
@@ -11,7 +12,6 @@ export function Navigation() {
         <Container fluid>
           <Navbar.Brand href="#">tETF</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
-          <Navbar.Collapse id="navbarScroll">
             <Nav
               className="me-auto my-2 my-lg-0"
               style={{ maxHeight: '100px' }}
@@ -22,11 +22,23 @@ export function Navigation() {
               <Nav.Link href="#action2"><Telegram /></Nav.Link>
               <Nav.Link href="#action2"><Github /></Nav.Link>
             </Nav>
-           <Container class="text-end">
-               <Profile />
-           </Container>
-          </Navbar.Collapse>
+           <Row className="d-flex justify-content-between " style={styles.connectWallet}>
+               <Col>
+                <Account />
+                </Col>
+               <Col>
+                <Profile style={styles.connectWallet}/>
+               </Col>
+           </Row>
         </Container>
       </Navbar>
     )
+}
+
+const styles = {
+    connectWallet : {
+        whiteSpace: 'nowrap',
+        testAlign: 'center',
+        marginRight: '1%'
+    }
 }

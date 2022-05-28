@@ -1,7 +1,6 @@
-import React from 'react';
-
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 
 export function Profile() {
   const { data } = useAccount()
@@ -13,7 +12,6 @@ export function Profile() {
   if (data)
     return (
       <div>
-        Connected to {data.address}
         <button onClick={() => disconnect()}>Disconnect</button>
       </div>
     )
