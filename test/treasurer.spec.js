@@ -17,7 +17,7 @@ describe("treasurer", () => {
 		
         const Treasury = await ethers.getContractFactory("treasurer");
         treasury = await Treasury.deploy();
-		const ownerBalance = await treasury(owner.address);
+		
     });
 
 	describe("deposit", function () {
