@@ -17,14 +17,15 @@ describe("treasurer", () => {
 		
         const Treasury = await ethers.getContractFactory("treasurer");
         treasury = await Treasury.deploy();
-		const ownerBalance = await treasury(owner.address);
+		await treasury.deployed();
+
     });
 
 	describe("deposit", function () {
         it("Should send usdc to the contract when user deposits", async function () {
             await expect(
-				treasury.deposit(owner,100)
-                //treasury.connect(account1).deposit(account1,100);
+				//treasury.deposit(owner,100)
+                treasury.connect(account1).deposit(account1,100)
             ).to.emit(treasury,"Deposit");
         });
 		it("should revert when not called by an owner", async function () {
@@ -33,12 +34,6 @@ describe("treasurer", () => {
 			).to.be.revertedWith("Not an owner");
 		});
 
-
-		it("should emit added event when pet is added", async function () {
-			await expect(petPark.connect(owner).add(AnimalType.Fish, 5))
-				.to.emit(petPark, "Added")
-				.withArgs(AnimalType.Fish, 5);
-		});
 	});
 
 	describe("withdrawUSDC", function() {

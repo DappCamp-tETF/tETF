@@ -21,8 +21,8 @@ contract treasurer {
     using SafeERC20 for IERC20;
 
     address owner;    // current owner of the contract
-    IERC20 usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
-    IERC20 tETF = IERC20(0x514910771AF9Ca656af840dff83E8264EcF986CA); //using LINK address as placeholder
+    IERC20 usdc = IERC20(0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b);
+    IERC20 tETF = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599); //using WBTC address as placeholder
     
     mapping (address => uint) usdcByAddress;
     mapping (address => uint) tETFByAddress;
@@ -31,10 +31,6 @@ contract treasurer {
     event WithdrawUSDC(address indexed _to, uint _value);
     event WithdrawtETF(address indexed _to, uint _value);
     event Balances(address indexed _from, uint _usdcValue, uint _tETFValue);
-
-    constructor() public {
-        owner = msg.sender;
-    }
 
     function withdrawUSDC(uint amount) public {
         require(owner == msg.sender);
