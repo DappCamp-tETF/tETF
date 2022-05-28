@@ -7,8 +7,8 @@ describe("treasurer", () => {
     beforeEach(async () => {
         const accounts = await ethers.getSigners();
 
-        const owner = accounts[0];
-        const account1 = accounts[1];
+        owner = accounts[0];
+        account1 = accounts[1];
 
 		//@dev add testing for tETF token balances once we link with FundManager
 		//const Token = await ethers.getContractFactory("Token");
@@ -17,12 +17,9 @@ describe("treasurer", () => {
 		
         const Treasury = await ethers.getContractFactory("treasurer");
         treasury = await Treasury.deploy();
-<<<<<<< HEAD
+
 		await treasury.deployed();
 
-=======
-		
->>>>>>> 91e45bf9c5f33add652be486f67198b0642e375f
     });
 
 	describe("deposit", function () {
