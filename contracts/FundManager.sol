@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/Uniswap.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-contract TestUniswap {
+contract FundManager {
   address private constant UNISWAP_V2_ROUTER =
     0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
