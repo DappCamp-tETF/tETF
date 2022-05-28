@@ -26,6 +26,7 @@ contract treasurer {
     event Deposit (address indexed _from, uint _value);
     event WithdrawUSDC(address indexed _to, uint _value);
     event WithdrawtETF(address indexed _to, uint _value);
+    event Withdraw(address indexed _to, uint _value);
     event Balances(address indexed _from, uint _usdcValue, uint _tETFValue);
 
     // constructor() public {
@@ -48,21 +49,37 @@ contract treasurer {
 
         emit WithdrawtETF(msg.sender, amount);
     }
+
+    function withdraw(address to, uint amount) public {
+        require(amount<=tETFByAddress[msg.sender],"You do not hold enough tETF.");
+        FundManager FM;
+        uint tETFLiquidated = FM.liquidate(amount);
+        tETFByAddress[msg.sender] -= tETFLiquidated;
+
+        emit Withdraw(msg.sender, string.concat("tETF withdrawn: ", tETFLiquidated.toString()), 
+        string.concat("New Balance: ", tETFByAddress[msg.sender].toString()));
+    }
+
     function deposit(address from, uint amount) public payable {
         require(msg.value == amount);
         SafeERC20.safeTransferFrom(usdc, msg.sender, address(this), amount);
-        usdcByAddress[from]+=amount;
+        //iusdcByAddress[from]+=amount;
         //@dev add send to Fund Manager
-
-        emit Deposit(msg.sender, msg.value);
+        FundManager FM;
+        uint tETFAdded = FM.invest(amount);
+        tETFByAddress[msg.sender] += tETFAdded;
+        emit Deposit(msg.sender,string.concat("tETF purchased: ", tETFAdded.toString()),
+        string.concat("New Balance: ", tETFByAddress[msg.sender].toString()));
     }
 
     function getBalances() public view returns (uint, uint) {
         return (usdcByAddress[msg.sender], tETFByAddress[msg.sender]);
+    }
+
 
        //emit Balances(msg.sender, usdcByAddress[msg.sender], tETFByAddress[msg.sender]); 
-    }
+}
     // function gettETFBalance() public view returns (uint) {
     //     return tETFByAddress[msg.sender];
     // }
-}
+
