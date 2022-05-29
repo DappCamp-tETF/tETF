@@ -56,3 +56,6 @@ describe("treasurer", () => {
         });
 	});
 });
+describe("FundManager",() => {
+	
+}

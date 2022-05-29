@@ -9,6 +9,7 @@ contract FundManager {
 
   AggregatorV3Interface internal ethFeed;
   AggregatorV3Interface internal btcFeed;
+
   address private constant UNISWAP_V2_ROUTER =
     0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
@@ -31,6 +32,7 @@ contract FundManager {
 
     (
       uint btcRoundID,
+      int256 btcPrice,
       uint btcStartedAt,
       uint btcTimeStamp,
       uint80 btcAnsweredInRound
@@ -46,7 +48,6 @@ contract FundManager {
     address _tokenOut,
     uint _amountIn,
     string memory _swapType,
-    uint _amountOutMin,
     address _to // contract address
   ) internal {
     if (keccak256(bytes(_swapType)) == keccak256("invest")) {
@@ -55,6 +56,7 @@ contract FundManager {
     IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
 
     address[] memory path;
+    uint _amountOutMin = 0;
     path = new address[](2);
     path[0] = USDC;
     path[1] = _tokenOut;
@@ -107,7 +109,6 @@ contract FundManager {
               WBTC, // WBTC address
               uint256(btcInvestment),
               swapType,
-              uint256(minAmount),
               address(this)
               );
 
@@ -116,7 +117,6 @@ contract FundManager {
               WETH, // WETH address
               uint256(ethInvestment),
               swapType,
-              uint256(minAmount),
               address(this)
               );
         tETFTokens = _investmentAmount/(btcPrice + 20*ethPrice);
@@ -125,7 +125,6 @@ contract FundManager {
     }
     // completes the swaps and sends USDC to the user. tETF tokens should be reduces by treasurer
     function liquidate(
-      uint minAmount,
       int256 _tETFTokens) internal {
       int256 ethPrice;
       int256 btcPrice;
@@ -134,13 +133,14 @@ contract FundManager {
       int256 ethLiquidation;
       btcLiquidation = _tETFTokens*btcPrice/(btcPrice + 20*ethPrice);
       ethLiquidation = _tETFTokens*ethPrice/(btcPrice + 20*ethPrice);
+      
+
       string memory swapType = "liquidate";
         swap(
               WBTC, // WBTC
               USDC, // USDC address
               uint256(btcLiquidation),
               swapType,
-              minAmount,
               msg.sender
               );
 
@@ -149,7 +149,6 @@ contract FundManager {
               USDC, // USDC address
               uint256(ethLiquidation),
               swapType,
-              minAmount,
               msg.sender
               );
 
