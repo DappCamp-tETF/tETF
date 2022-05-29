@@ -52,22 +52,24 @@ contract FundManager {
   ) internal {
     if (keccak256(bytes(_swapType)) == keccak256("invest")) {
           IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        }
-    IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
+          IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
+          address[] memory path;
+          uint _amountOutMin = 0;
+          path = new address[](2);
+          path[0] = USDC;
+          path[1] = _tokenOut;
 
-    address[] memory path;
-    uint _amountOutMin = 0;
-    path = new address[](2);
-    path[0] = USDC;
-    path[1] = _tokenOut;
-
-    IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactTokensForTokens(
-      _amountIn,
-      _amountOutMin,
-      path,
-      _to,
-      block.timestamp
+          IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactTokensForTokens(
+            _amountIn,
+            _amountOutMin,
+            path,
+            _to,
+            block.timestamp
     );
+        }
+    
+    
+    
   }
 
   function getAmountOutMin(
@@ -90,19 +92,19 @@ contract FundManager {
   // invests the USDC in the underlying assets and returns the number of tETF tokens
   // treasurer should map the number of tETF tokens to the user and store it
   function invest(
-        int minAmount,
         // USDC
         int256 _investmentAmount
         
     ) internal returns (int256 tETFTokens){
         require(_investmentAmount > 0, "amount has to be positive");
-        int256 ethPrice;
-        int256 btcPrice;
-        (ethPrice, btcPrice) = getPrice();
+        int256 ethPrice = 2000;
+        int256 btcPrice = 30000;
+        // (ethPrice, btcPrice) = getPrice();
         int256 btcInvestment;
         int256 ethInvestment;
         btcInvestment = _investmentAmount*btcPrice/(btcPrice + 20*ethPrice);
         ethInvestment = _investmentAmount*ethPrice/(btcPrice + 20*ethPrice);
+        
         string memory swapType = "Invest";
         swap(
               USDC, // USDC
@@ -111,7 +113,6 @@ contract FundManager {
               swapType,
               address(this)
               );
-
         swap(
               USDC, // USDC
               WETH, // WETH address
@@ -126,9 +127,9 @@ contract FundManager {
     // completes the swaps and sends USDC to the user. tETF tokens should be reduces by treasurer
     function liquidate(
       int256 _tETFTokens) internal {
-      int256 ethPrice;
-      int256 btcPrice;
-      (ethPrice, btcPrice) = getPrice();
+      int256 ethPrice = 2000;
+      int256 btcPrice = 30000;
+      // (ethPrice, btcPrice) = getPrice();
       int256 btcLiquidation;
       int256 ethLiquidation;
       btcLiquidation = _tETFTokens*btcPrice/(btcPrice + 20*ethPrice);

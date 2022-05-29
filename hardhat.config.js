@@ -16,20 +16,26 @@
 
  let networks = {};
  if (NETWORK == TEST_NETWORK) {
-    networks = {
-     test_network: {
-       url: `https://eth-rinkeby.alchemyapi.io/v2/9GzBIVRqIqCIR9I9yBg6ertpva_eIm1D`
+  networks = {
+    hardhat: {
+      forking: {
+        url: "https://eth-mainnet.alchemyapi.io/v2/asAHlPgJwvoA3gBIv41kI8oBRJ7bZ_8A",
+        blockNumber: 14864994,
+        enabled: true,
+      }
+    }
+  }
+  //   networks = {
+  //    test_network: {
+  //      url: `https://eth-mainnet.alchemyapi.io/v2/asAHlPgJwvoA3gBIv41kI8oBRJ7bZ_8A`
+  //     //  url: `https://eth-rinkeby.alchemyapi.io/v2/jnE2fZOU9mSZ6YarRtKcD5r5CiNZA2If`
 
-     }
-   }
+  //    }
+  //  }
  };
-// networks: {
-//   hardhat: {
-//     forking: {
-//       url: "https://eth-mainnet.alchemyapi.io/v2/9GzBIVRqIqCIR9I9yBg6ertpva_eIm1D"
-//     }
-//   }
-// };
+
+
+
 
  task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -41,6 +47,15 @@
 
  module.exports = {
    solidity: "0.8.1",
-   networks: networks
+   networks: {
+    hardhat: {
+      forking: {
+        url: "https://eth-mainnet.alchemyapi.io/v2/asAHlPgJwvoA3gBIv41kI8oBRJ7bZ_8A",
+        enabled: true,
+        gasPrice: 204369036266, 
+        gas: 53064000,
+      }
+    }
+  }
  };
  

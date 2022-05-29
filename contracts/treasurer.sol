@@ -8,9 +8,11 @@
 
 
 pragma solidity ^0.8.0;
+import "hardhat/console.sol";
 
 //import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./FundManager.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract treasurer is FundManager {
 
@@ -23,12 +25,13 @@ contract treasurer is FundManager {
     mapping (address => int256) usdcByAddress;
     mapping (address => int256) tETFByAddress;
 
-    event Deposit (address indexed _from, uint _value);
+    // event Deposit (address indexed _from, uint _value);
+    event Deposit (address indexed _from, string _deposited, string _balance);
     event Withdraw(address indexed _to, string _withdrawn, string _balance);
-    event Balances(address indexed _from, uint _usdcValue, uint _tETFValue);
+    event Balances(address indexed _from, int _tETFValue);
 
 
-    function withdraw(address to, int256 amount) public {
+    function withdraw(int256 amount) public {
         require(amount<=tETFByAddress[msg.sender],"You do not hold enough tETF.");
         liquidate(amount);
         uint usdcWithdrawn = 12;
@@ -37,17 +40,20 @@ contract treasurer is FundManager {
         emit Withdraw(msg.sender, "USDC Withdrawn: 12", "New Balance: 0");
     }
 
-    function deposit(address from, int256 amount) public payable {
-        require(keccak256(abi.encodePacked(msg.value)) == keccak256(abi.encodePacked(amount)));
+    function deposit(int256 amount) public payable {
         //SafeERC20.safeTransferFrom(usdc, msg.sender, address(this), amount);
-        int256 tETFAdded = invest(amount);
+
+        int256 tETFAdded = FundManager.invest(amount);
         tETFByAddress[msg.sender] += tETFAdded;
-        emit Deposit(msg.sender,string.concat("tETF purchased: ", tETFAdded.toString()),
-        string.concat("New Balance: ", tETFByAddress[msg.sender].toString()));
+        console.logInt(tETFByAddress[msg.sender]);
+        console.log(msg.sender);
+        emit Deposit(msg.sender, "tETF purchased: 12", "New Balance: 12");
     }
 
-    function getBalances() public view returns (uint, uint) {
-        return (usdcByAddress[msg.sender], tETFByAddress[msg.sender]);
+    function getBalances() public returns (int256) {
+        console.log(msg.sender);
+        emit Balances(msg.sender, tETFByAddress[msg.sender]);
+        return tETFByAddress[msg.sender];
     }
 
 

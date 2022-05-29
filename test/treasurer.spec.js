@@ -16,46 +16,44 @@ describe("treasurer", () => {
 		//const ownerBalance = await tETFToken.balanceOf(owner.address);
 		
         const Treasury = await ethers.getContractFactory("treasurer");
-        treasury = await Treasury.deploy();
+        treasury = await Treasury.deploy({ gasLimit: 30000000 });
 
 		await treasury.deployed();
 
     });
+	// describe("firsttest", function () {
+
+	// })
 
 	describe("deposit", function () {
         it("Should send usdc to the contract when user deposits", async function () {
             await expect(
 				//treasury.deposit(owner,100)
-                treasury.connect(account1).deposit(account1.address,100)
+                treasury.connect(account1).deposit(150000)
             ).to.emit(treasury,"Deposit");
         });
-		it("should revert when not called by an owner", async function () {
-			await expect(
-				treasury.connect(account1).withdraw(100)
-			).to.be.revertedWith("Not an owner");
-		});
+		// it("should revert when not called by an owner", async function () {
+		// 	await expect(
+		// 		treasury.connect(account1).withdraw(100)
+		// 	).to.be.revertedWith("Not an owner");
+		// });
 
 	});
 
-	describe("withdrawUSDC", function() {
-		it("should return funds to the user when they withdraw a valid value", async function () {
-            await expect(
-				treasury.withdrawUSDC(owner,100)
-            ).to.emit(treasury,"Withdraw");
-        });
-	});
+	// describe("withdraw", function() {
+	// 	it("should return funds to the user when they withdraw a valid value", async function () {
+    //         await expect(
+	// 			treasury.withdraw(100)
+    //         ).to.emit(treasury,"Withdraw");
+    //     });
+	// });
 
 	describe("getBalances", function() {
-		it("should update account balance when funds deposited", async function () {
+		it("Should update account balance when funds are deposited", async function () {
             await expect(
-				treasury
-					.getBalances(account1)
-
-                //treasury.connect(account1).deposit(account1,100);
-            ).to.emit(0,0);
+                treasury.getBalances()
+            ).to.emit(treasury,"Balances");
         });
 	});
 });
-describe("FundManager",() => {
-	
-}
+
