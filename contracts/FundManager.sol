@@ -6,6 +6,9 @@ import "./interfaces/Uniswap.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract FundManager {
+
+  AggregatorV3Interface internal ethFeed;
+  AggregatorV3Interface internal btcFeed;
   address private constant UNISWAP_V2_ROUTER =
     0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
@@ -13,14 +16,14 @@ contract FundManager {
   address private constant WBTC = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
   address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
-  // gets the price of each asset from chainlink
-  function getPrice() public view returns (int, int) {
-    AggregatorV3Interface ethFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
-    AggregatorV3Interface btcFeed = AggregatorV3Interface(0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c);
+  // gets the price of each asset from chainlink 
+  function getPrice() public returns (int256, int256) {
+    ethFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+    btcFeed = AggregatorV3Interface(0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c);
 
     (
       uint ethRoundID,
-      int ethPrice,
+      int256 ethPrice,
       uint ethStartedAt,
       uint ethTimeStamp,
       uint80 ethAnsweredInRound
@@ -28,7 +31,6 @@ contract FundManager {
 
     (
       uint btcRoundID,
-      int btcPrice,
       uint btcStartedAt,
       uint btcTimeStamp,
       uint80 btcAnsweredInRound
@@ -47,8 +49,7 @@ contract FundManager {
     uint _amountOutMin,
     address _to // contract address
   ) internal {
-
-    if (keccak256(abi.encodePacked(_swapType)) == keccak256(abi.encodePacked("invest"))){
+    if (keccak256(bytes(_swapType)) == keccak256("invest")) {
           IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
         }
     IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
@@ -87,56 +88,58 @@ contract FundManager {
   // invests the USDC in the underlying assets and returns the number of tETF tokens
   // treasurer should map the number of tETF tokens to the user and store it
   function invest(
-        address _tokenIn, // USDC
-        uint256 _investmentAmount
-    ) internal {
+        int minAmount,
+        // USDC
+        int256 _investmentAmount
+        
+    ) internal returns (int256 tETFTokens){
         require(_investmentAmount > 0, "amount has to be positive");
-        uint minAmount;
-        uint ethPrice;
-        uint btcPrice;
-
+        int256 ethPrice;
+        int256 btcPrice;
         (ethPrice, btcPrice) = getPrice();
-
-        uint btcInvestment = _investmentAmount*btcPrice/(btcPrice + 20*ethPrice);
-        uint ethInvestment = _investmentAmount*ethPrice/(btcPrice + 20*ethPrice);
-
+        int256 btcInvestment;
+        int256 ethInvestment;
+        btcInvestment = _investmentAmount*btcPrice/(btcPrice + 20*ethPrice);
+        ethInvestment = _investmentAmount*ethPrice/(btcPrice + 20*ethPrice);
+        string memory swapType = "Invest";
         swap(
               USDC, // USDC
               WBTC, // WBTC address
-              btcInvestment,
-              minAmount,
+              uint256(btcInvestment),
+              swapType,
+              uint256(minAmount),
               address(this)
               );
 
         swap(
               USDC, // USDC
               WETH, // WETH address
-              ethInvestment,
-              minAmount,
+              uint256(ethInvestment),
+              swapType,
+              uint256(minAmount),
               address(this)
               );
-        uint tETFTokens = _investmentAmount/(btcPrice + 20*ethPrice);
+        tETFTokens = _investmentAmount/(btcPrice + 20*ethPrice);
         return tETFTokens;
         
     }
     // completes the swaps and sends USDC to the user. tETF tokens should be reduces by treasurer
     function liquidate(
-      uint256 _tETFTokens) internal {
-      uint minAmount;
-      uint ethPrice;
-      uint btcPrice;
-      uint btcLiquidation;
-      uint ethLiquidation;
-
+      uint minAmount,
+      int256 _tETFTokens) internal {
+      int256 ethPrice;
+      int256 btcPrice;
       (ethPrice, btcPrice) = getPrice();
-
+      int256 btcLiquidation;
+      int256 ethLiquidation;
       btcLiquidation = _tETFTokens*btcPrice/(btcPrice + 20*ethPrice);
       ethLiquidation = _tETFTokens*ethPrice/(btcPrice + 20*ethPrice);
-
+      string memory swapType = "liquidate";
         swap(
               WBTC, // WBTC
               USDC, // USDC address
-              btcLiquidation,
+              uint256(btcLiquidation),
+              swapType,
               minAmount,
               msg.sender
               );
@@ -144,7 +147,8 @@ contract FundManager {
         swap(
               WETH, // WETH
               USDC, // USDC address
-              ethLiquidation,
+              uint256(ethLiquidation),
+              swapType,
               minAmount,
               msg.sender
               );
