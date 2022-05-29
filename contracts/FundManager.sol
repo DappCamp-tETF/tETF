@@ -14,13 +14,13 @@ contract FundManager {
   address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
   // gets the price of each asset from chainlink
-  function getPrice() public view returns (uint, uint) {
+  function getPrice() public view returns (int, int) {
     AggregatorV3Interface ethFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
     AggregatorV3Interface btcFeed = AggregatorV3Interface(0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c);
 
     (
       uint ethRoundID,
-      uint ethPrice,
+      int ethPrice,
       uint ethStartedAt,
       uint ethTimeStamp,
       uint80 ethAnsweredInRound
@@ -28,7 +28,7 @@ contract FundManager {
 
     (
       uint btcRoundID,
-      uint btcPrice,
+      int btcPrice,
       uint btcStartedAt,
       uint btcTimeStamp,
       uint80 btcAnsweredInRound
@@ -48,7 +48,7 @@ contract FundManager {
     address _to // contract address
   ) internal {
 
-    if (_swapType == "invest") {
+    if (keccak256(abi.encodePacked(_swapType)) == keccak256(abi.encodePacked("invest"))){
           IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
         }
     IERC20(_tokenIn).approve(UNISWAP_V2_ROUTER, _amountIn);
