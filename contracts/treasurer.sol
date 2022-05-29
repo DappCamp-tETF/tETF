@@ -64,7 +64,7 @@ contract treasurer {
         require(msg.value == amount);
         SafeERC20.safeTransferFrom(usdc, msg.sender, address(this), amount);
         //iusdcByAddress[from]+=amount;
-        //@dev add send to Fund Manager
+        //send to Fund Manager
         FundManager FM;
         uint tETFAdded = FM.invest(amount);
         tETFByAddress[msg.sender] += tETFAdded;
