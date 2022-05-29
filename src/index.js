@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './App';
+import { createRoot } from 'react-dom/client'
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import {
     WagmiConfig,
     configureChains,
@@ -17,16 +16,19 @@ import {
   import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
   
   import { Buffer } from 'buffer'
-  
+  import { ApolloProvider } from '@apollo/client';
+  import { apolloClient } from './components/Calc'
 
+const myvar = process.env.REACT_APP_API_KEY
+const container = document.getElementById('root')
+const root = createRoot(container)
 
-  
-  // polyfill Buffer for client
-  if (!window.Buffer) {
+// polyfill Buffer for client
+if (!window.Buffer) {
     window.Buffer = Buffer
   }
   
-  const alchemyId = process.env.REACT_APP_ALCHEMY_ID
+  const alchemyId = 'LC41wuWL0Es9BlPEnZnI5nCRSN8ZPjfJ'
   
   const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
     alchemyProvider({ alchemyId }),
@@ -35,36 +37,19 @@ import {
   const client = createClient({
     autoConnect: true,
     connectors: [
-      new MetaMaskConnector({ chains }),
-      new CoinbaseWalletConnector({
-        chains,
-        options: {
-          appName: 'wagmi',
-        },
-      }),
-      new WalletConnectConnector({
-        chains,
-        options: {
-          qrcode: true,
-        },
-      }),
-      new InjectedConnector({
-        chains,
-        options: {
-          name: 'Injected',
-          shimDisconnect: true,
-        },
-      }),
+        new InjectedConnector({
+            options: {
+              shimDisconnect: false,
+            },
+          })
     ],
     provider,
     webSocketProvider,
   })
-
-ReactDOM.render(
-   <React.StrictMode>
-    <WagmiConfig client={client}>
-      <App />
-    </WagmiConfig>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+root.render(
+    <ApolloProvider client={apolloClient}>
+<WagmiConfig client={client}>
+    <App />
+</WagmiConfig>
+</ApolloProvider>
+)

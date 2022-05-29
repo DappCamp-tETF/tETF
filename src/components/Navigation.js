@@ -3,9 +3,12 @@ import { Navbar, Row, Col, Container, Nav } from 'react-bootstrap';
 import { Profile } from './Profile';
 import { Twitter, Discord, Telegram, Github  } from 'react-bootstrap-icons';
 import { Account } from './Account';
+import { Badge } from 'react-bootstrap'
+import { trim } from '../utils/helpers'
 
 
-export function Navigation() {
+
+export function Navigation(props) {
 
     return(
         <Navbar bg="light" expand="lg">
@@ -24,7 +27,8 @@ export function Navigation() {
             </Nav>
            <Row className="d-flex justify-content-between " style={styles.connectWallet}>
                <Col>
-                <Account />
+                {/* <Account /> */}
+                {props.data.address && <Badge pill bg='primary'> {trim(props.data.address, -36)}</Badge>}
                 </Col>
                <Col>
                 <Profile style={styles.connectWallet}/>
