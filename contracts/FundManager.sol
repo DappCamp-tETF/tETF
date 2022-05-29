@@ -91,7 +91,7 @@ contract FundManager {
   // treasurer should map the number of tETF tokens to the user and store it
   function invest(
         int minAmount,
-        address _tokenIn, // USDC
+        // USDC
         int256 _investmentAmount
         
     ) internal returns (int256 tETFTokens){
