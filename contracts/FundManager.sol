@@ -4,8 +4,23 @@ pragma solidity ^0.8;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/Uniswap.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract FundManager {
+
+contract FundManager is ERC20{
+
+  constructor() ERC20('tETF', 'ETF'){
+    _mint(msg.sender, 10000 * 10 **18);
+  }
+
+  function mint(address to, uint amount) external {
+    _mint(to, amount);
+  }
+
+  function burn(uint amount) external {
+    _burn(msg.sender, amount);
+  }
+
   address private constant UNISWAP_V2_ROUTER =
     0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
